@@ -1,0 +1,20 @@
+version: 0.2
+phases:
+  pre_build:
+    commands:
+      - echo Installing Git and Maven softwares
+      - yum install git -y
+      - cp settings.xml /root/.m2
+      - docker --version
+
+  build:
+    commands:
+      - echo Maven Build started on `date`
+  post_build:
+    commands:
+      - echo Build completed on `date`
+      - echo checking build files
+      -(Get-ECRLoginCommand).Password | docker login --username AWS --password-stdin 575108956059.dkr.ecr.us-east-1.amazonaws.com
+      - docker build -t rep01 .
+      - docker tag rep01:latest 575108956059.dkr.ecr.us-east-1.amazonaws.com/rep01:latest
+      - docker push 575108956059.dkr.ecr.us-east-1.amazonaws.com/rep01:latest
